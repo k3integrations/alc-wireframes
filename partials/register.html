@@ -1,0 +1,18 @@
+<div class="register" ng-controller="registerCtrl">
+  <img alc-holder="holder.js/100%x500/text:Join the Community">
+  <form data-abide>
+    <div class="row start">
+      <div class="columns">
+        <div class="row">
+          <div class="small-3 small-centered columns progress-dots">
+            <div class="dot" ng-repeat="state in states" ng-class="{'current': currentState() == state, 'completed': currentStateIndex > $index}"></div>
+            <p class="number">2/7</p>
+          </div>
+        </div>
+        <div class="body" ng-include="'partials/register.' + currentState() + '.html'"></div>
+        <a class="button" ng-click="previousState()" ng-show="currentStateIndex > 0">Previous</a>
+        <a class="button next" ng-click="nextState()"ng-show="currentStateIndex < states.length">Next</a>
+      </div>
+    </div>
+  </form>
+</div>

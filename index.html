@@ -1,0 +1,43 @@
+<!doctype html>
+<html class="no-js" lang="en" ng-app="ALC">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Adventist Learning Community</title>
+
+    <link rel="stylesheet" href="styles/vendor.css">
+
+    <link rel="stylesheet" href="styles/main.css">
+
+    <script src="scripts/vendor/modernizr.js"></script>
+  </head>
+  <body>
+    <div class="off-canvas-wrap">
+      <div class="inner-wrap">
+        <ng-include src="'partials/header.html'"></ng-include>
+
+        <div class="page-content">
+
+          <div ui-view></div>
+
+          <aside class="left-off-canvas-menu">
+            <ul class="off-canvas-list">
+              <li><a class="large-1 columns" ui-sref-active="active" ui-sref="home">home</a></li>
+              <li><a class="large-3 columns" ui-sref-active="active" ui-sref="getting_started">getting started</a></li>
+              <li><a class="large-2 columns" ui-sref-active="active" ui-sref="education">education</a></li>
+              <li><a class="large-3 columns" ui-sref-active="active" ui-sref="personal_growth">personal growth</a></li>
+              <li><a class="large-3 columns" ui-sref-active="active" ui-sref="resources">find resources</a></li>
+            </ul>
+          </aside>
+
+        </div>
+      </div>
+    </div>
+
+
+    <script src="scripts/vendor.js"></script>
+
+    <script src="scripts/main.js"></script>
+</body>
+</html>
