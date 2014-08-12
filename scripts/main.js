@@ -20,7 +20,7 @@ Holder.add_theme('wf-dark', {
   fontweight: 'lighter'
 }).run();
 
-app = angular.module('ALC', ['mm.foundation', 'ui.router']);
+app = angular.module('ALC', ['mm.foundation', 'ui.router', 'ngDropzone', 'ui.utils']);
 
 app.config(function($stateProvider, $urlRouterProvider) {
   'use strict';
@@ -77,6 +77,11 @@ angular.module('ALC').controller('registerCtrl', function($scope) {
   $scope.registrant = {};
   $scope.form = {};
   $scope.states = ['role', 'studentId', 'name', 'dob', 'email', 'password', 'avatar', 'confirm'];
+  $scope.avatarThumb = function(file, dataURI) {
+    $scope.registrant.avatarURI = dataURI;
+    $scope.registrant.avatar = file;
+    return $scope.$digest();
+  };
   _ref = $scope.states;
   for (_i = 0, _len = _ref.length; _i < _len; _i++) {
     state = _ref[_i];
