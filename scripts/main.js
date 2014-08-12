@@ -31,9 +31,23 @@ app.config(function($stateProvider, $urlRouterProvider) {
   }).state('register', {
     url: '/register',
     templateUrl: 'partials/register.html'
+  }).state('register-complete', {
+    controller: function($state, $rootScope, $scope) {
+      console.log('foobar!');
+      $rootScope.user = $scope.$parent.registrant;
+      return $state.go('dashboard');
+    }
   }).state('dashboard', {
     url: '/dashboard',
-    templateUrl: 'partials/dashboard.html'
+    templateUrl: 'partials/dashboard.html',
+    controller: function($rootScope) {
+      return $rootScope.header = 'my-header';
+    }
+  }).state('logout', {
+    controller: function($state, $rootScope) {
+      $rootScope.header = void 0;
+      return $state.go('home');
+    }
   });
 });
 
