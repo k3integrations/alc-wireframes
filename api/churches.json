@@ -1,0 +1,402 @@
+[
+  {
+    "id": 0,
+    "text": "Evangelinaville SDA Church"
+  },
+  {
+    "id": 1,
+    "text": "Farmerville SDA Church"
+  },
+  {
+    "id": 2,
+    "text": "Winifredburg SDA Church"
+  },
+  {
+    "id": 3,
+    "text": "Mcbrideburg SDA Church"
+  },
+  {
+    "id": 4,
+    "text": "Douglasburg SDA Church"
+  },
+  {
+    "id": 5,
+    "text": "Hopeburg SDA Church"
+  },
+  {
+    "id": 6,
+    "text": "Avisville SDA Church"
+  },
+  {
+    "id": 7,
+    "text": "Jacobsonburg SDA Church"
+  },
+  {
+    "id": 8,
+    "text": "Christineburg SDA Church"
+  },
+  {
+    "id": 9,
+    "text": "Reeseville SDA Church"
+  },
+  {
+    "id": 10,
+    "text": "Mcphersonburg SDA Church"
+  },
+  {
+    "id": 11,
+    "text": "Wallaceville SDA Church"
+  },
+  {
+    "id": 12,
+    "text": "Kirbyville SDA Church"
+  },
+  {
+    "id": 13,
+    "text": "Altheaville SDA Church"
+  },
+  {
+    "id": 14,
+    "text": "Esmeraldaburg SDA Church"
+  },
+  {
+    "id": 15,
+    "text": "Hinesburg SDA Church"
+  },
+  {
+    "id": 16,
+    "text": "Charlotteville SDA Church"
+  },
+  {
+    "id": 17,
+    "text": "Joyburg SDA Church"
+  },
+  {
+    "id": 18,
+    "text": "Summerburg SDA Church"
+  },
+  {
+    "id": 19,
+    "text": "Francoville SDA Church"
+  },
+  {
+    "id": 20,
+    "text": "Marshville SDA Church"
+  },
+  {
+    "id": 21,
+    "text": "Emersonburg SDA Church"
+  },
+  {
+    "id": 22,
+    "text": "Phyllisburg SDA Church"
+  },
+  {
+    "id": 23,
+    "text": "Heidiville SDA Church"
+  },
+  {
+    "id": 24,
+    "text": "Micheleburg SDA Church"
+  },
+  {
+    "id": 25,
+    "text": "Bridgetteville SDA Church"
+  },
+  {
+    "id": 26,
+    "text": "Allysonburg SDA Church"
+  },
+  {
+    "id": 27,
+    "text": "Riosburg SDA Church"
+  },
+  {
+    "id": 28,
+    "text": "Alexandriaburg SDA Church"
+  },
+  {
+    "id": 29,
+    "text": "Priceville SDA Church"
+  },
+  {
+    "id": 30,
+    "text": "Morganville SDA Church"
+  },
+  {
+    "id": 31,
+    "text": "Lavonneburg SDA Church"
+  },
+  {
+    "id": 32,
+    "text": "Isabellaville SDA Church"
+  },
+  {
+    "id": 33,
+    "text": "Myersville SDA Church"
+  },
+  {
+    "id": 34,
+    "text": "Lorettaville SDA Church"
+  },
+  {
+    "id": 35,
+    "text": "Parrishburg SDA Church"
+  },
+  {
+    "id": 36,
+    "text": "Melanieburg SDA Church"
+  },
+  {
+    "id": 37,
+    "text": "Kochville SDA Church"
+  },
+  {
+    "id": 38,
+    "text": "Josefaburg SDA Church"
+  },
+  {
+    "id": 39,
+    "text": "Johnstonville SDA Church"
+  },
+  {
+    "id": 40,
+    "text": "Carrville SDA Church"
+  },
+  {
+    "id": 41,
+    "text": "Genevieveville SDA Church"
+  },
+  {
+    "id": 42,
+    "text": "Maxwellville SDA Church"
+  },
+  {
+    "id": 43,
+    "text": "Fosterville SDA Church"
+  },
+  {
+    "id": 44,
+    "text": "Mcclainville SDA Church"
+  },
+  {
+    "id": 45,
+    "text": "Margaritaville SDA Church"
+  },
+  {
+    "id": 46,
+    "text": "Monaville SDA Church"
+  },
+  {
+    "id": 47,
+    "text": "Dixieburg SDA Church"
+  },
+  {
+    "id": 48,
+    "text": "Hazelburg SDA Church"
+  },
+  {
+    "id": 49,
+    "text": "Petraburg SDA Church"
+  },
+  {
+    "id": 50,
+    "text": "Riveraburg SDA Church"
+  },
+  {
+    "id": 51,
+    "text": "Sparksburg SDA Church"
+  },
+  {
+    "id": 52,
+    "text": "Gallowayburg SDA Church"
+  },
+  {
+    "id": 53,
+    "text": "Alstonville SDA Church"
+  },
+  {
+    "id": 54,
+    "text": "Horneburg SDA Church"
+  },
+  {
+    "id": 55,
+    "text": "Alvaradoville SDA Church"
+  },
+  {
+    "id": 56,
+    "text": "Mccallburg SDA Church"
+  },
+  {
+    "id": 57,
+    "text": "Henryville SDA Church"
+  },
+  {
+    "id": 58,
+    "text": "Nikkiburg SDA Church"
+  },
+  {
+    "id": 59,
+    "text": "Woodburg SDA Church"
+  },
+  {
+    "id": 60,
+    "text": "Randolphburg SDA Church"
+  },
+  {
+    "id": 61,
+    "text": "Kleinville SDA Church"
+  },
+  {
+    "id": 62,
+    "text": "Coxville SDA Church"
+  },
+  {
+    "id": 63,
+    "text": "Chandraville SDA Church"
+  },
+  {
+    "id": 64,
+    "text": "Jocelynville SDA Church"
+  },
+  {
+    "id": 65,
+    "text": "Albaburg SDA Church"
+  },
+  {
+    "id": 66,
+    "text": "Cherryburg SDA Church"
+  },
+  {
+    "id": 67,
+    "text": "Kelseyville SDA Church"
+  },
+  {
+    "id": 68,
+    "text": "Englishville SDA Church"
+  },
+  {
+    "id": 69,
+    "text": "Alfordburg SDA Church"
+  },
+  {
+    "id": 70,
+    "text": "Caseyburg SDA Church"
+  },
+  {
+    "id": 71,
+    "text": "Leonorville SDA Church"
+  },
+  {
+    "id": 72,
+    "text": "Gibsonville SDA Church"
+  },
+  {
+    "id": 73,
+    "text": "Nellville SDA Church"
+  },
+  {
+    "id": 74,
+    "text": "Carissaville SDA Church"
+  },
+  {
+    "id": 75,
+    "text": "Dollieburg SDA Church"
+  },
+  {
+    "id": 76,
+    "text": "Blackwellville SDA Church"
+  },
+  {
+    "id": 77,
+    "text": "Humphreyville SDA Church"
+  },
+  {
+    "id": 78,
+    "text": "Stevensonburg SDA Church"
+  },
+  {
+    "id": 79,
+    "text": "Murrayburg SDA Church"
+  },
+  {
+    "id": 80,
+    "text": "Hoganburg SDA Church"
+  },
+  {
+    "id": 81,
+    "text": "Connerville SDA Church"
+  },
+  {
+    "id": 82,
+    "text": "Hansonville SDA Church"
+  },
+  {
+    "id": 83,
+    "text": "Cassieburg SDA Church"
+  },
+  {
+    "id": 84,
+    "text": "Lucasburg SDA Church"
+  },
+  {
+    "id": 85,
+    "text": "Krystalburg SDA Church"
+  },
+  {
+    "id": 86,
+    "text": "Santanaville SDA Church"
+  },
+  {
+    "id": 87,
+    "text": "Lawrenceville SDA Church"
+  },
+  {
+    "id": 88,
+    "text": "Loraineburg SDA Church"
+  },
+  {
+    "id": 89,
+    "text": "Swansonville SDA Church"
+  },
+  {
+    "id": 90,
+    "text": "Maryburg SDA Church"
+  },
+  {
+    "id": 91,
+    "text": "Glendaville SDA Church"
+  },
+  {
+    "id": 92,
+    "text": "Rossburg SDA Church"
+  },
+  {
+    "id": 93,
+    "text": "Lorrieburg SDA Church"
+  },
+  {
+    "id": 94,
+    "text": "Jillianville SDA Church"
+  },
+  {
+    "id": 95,
+    "text": "Gracielaburg SDA Church"
+  },
+  {
+    "id": 96,
+    "text": "Joyceville SDA Church"
+  },
+  {
+    "id": 97,
+    "text": "Mccarthyburg SDA Church"
+  },
+  {
+    "id": 98,
+    "text": "Kathrineville SDA Church"
+  },
+  {
+    "id": 99,
+    "text": "Cherieburg SDA Church"
+  }
+]

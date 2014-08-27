@@ -1,0 +1,402 @@
+[
+  {
+    "id": 0,
+    "text": "Evangelinaville Adventist School"
+  },
+  {
+    "id": 1,
+    "text": "Farmerville Adventist School"
+  },
+  {
+    "id": 2,
+    "text": "Winifredburg Adventist School"
+  },
+  {
+    "id": 3,
+    "text": "Mcbrideburg Adventist School"
+  },
+  {
+    "id": 4,
+    "text": "Douglasburg Adventist School"
+  },
+  {
+    "id": 5,
+    "text": "Hopeburg Adventist School"
+  },
+  {
+    "id": 6,
+    "text": "Avisville Adventist School"
+  },
+  {
+    "id": 7,
+    "text": "Jacobsonburg Adventist School"
+  },
+  {
+    "id": 8,
+    "text": "Christineburg Adventist School"
+  },
+  {
+    "id": 9,
+    "text": "Reeseville Adventist School"
+  },
+  {
+    "id": 10,
+    "text": "Mcphersonburg Adventist School"
+  },
+  {
+    "id": 11,
+    "text": "Wallaceville Adventist School"
+  },
+  {
+    "id": 12,
+    "text": "Kirbyville Adventist School"
+  },
+  {
+    "id": 13,
+    "text": "Altheaville Adventist School"
+  },
+  {
+    "id": 14,
+    "text": "Esmeraldaburg Adventist School"
+  },
+  {
+    "id": 15,
+    "text": "Hinesburg Adventist School"
+  },
+  {
+    "id": 16,
+    "text": "Charlotteville Adventist School"
+  },
+  {
+    "id": 17,
+    "text": "Joyburg Adventist School"
+  },
+  {
+    "id": 18,
+    "text": "Summerburg Adventist School"
+  },
+  {
+    "id": 19,
+    "text": "Francoville Adventist School"
+  },
+  {
+    "id": 20,
+    "text": "Marshville Adventist School"
+  },
+  {
+    "id": 21,
+    "text": "Emersonburg Adventist School"
+  },
+  {
+    "id": 22,
+    "text": "Phyllisburg Adventist School"
+  },
+  {
+    "id": 23,
+    "text": "Heidiville Adventist School"
+  },
+  {
+    "id": 24,
+    "text": "Micheleburg Adventist School"
+  },
+  {
+    "id": 25,
+    "text": "Bridgetteville Adventist School"
+  },
+  {
+    "id": 26,
+    "text": "Allysonburg Adventist School"
+  },
+  {
+    "id": 27,
+    "text": "Riosburg Adventist School"
+  },
+  {
+    "id": 28,
+    "text": "Alexandriaburg Adventist School"
+  },
+  {
+    "id": 29,
+    "text": "Priceville Adventist School"
+  },
+  {
+    "id": 30,
+    "text": "Morganville Adventist School"
+  },
+  {
+    "id": 31,
+    "text": "Lavonneburg Adventist School"
+  },
+  {
+    "id": 32,
+    "text": "Isabellaville Adventist School"
+  },
+  {
+    "id": 33,
+    "text": "Myersville Adventist School"
+  },
+  {
+    "id": 34,
+    "text": "Lorettaville Adventist School"
+  },
+  {
+    "id": 35,
+    "text": "Parrishburg Adventist School"
+  },
+  {
+    "id": 36,
+    "text": "Melanieburg Adventist School"
+  },
+  {
+    "id": 37,
+    "text": "Kochville Adventist School"
+  },
+  {
+    "id": 38,
+    "text": "Josefaburg Adventist School"
+  },
+  {
+    "id": 39,
+    "text": "Johnstonville Adventist School"
+  },
+  {
+    "id": 40,
+    "text": "Carrville Adventist School"
+  },
+  {
+    "id": 41,
+    "text": "Genevieveville Adventist School"
+  },
+  {
+    "id": 42,
+    "text": "Maxwellville Adventist School"
+  },
+  {
+    "id": 43,
+    "text": "Fosterville Adventist School"
+  },
+  {
+    "id": 44,
+    "text": "Mcclainville Adventist School"
+  },
+  {
+    "id": 45,
+    "text": "Margaritaville Adventist School"
+  },
+  {
+    "id": 46,
+    "text": "Monaville Adventist School"
+  },
+  {
+    "id": 47,
+    "text": "Dixieburg Adventist School"
+  },
+  {
+    "id": 48,
+    "text": "Hazelburg Adventist School"
+  },
+  {
+    "id": 49,
+    "text": "Petraburg Adventist School"
+  },
+  {
+    "id": 50,
+    "text": "Riveraburg Adventist School"
+  },
+  {
+    "id": 51,
+    "text": "Sparksburg Adventist School"
+  },
+  {
+    "id": 52,
+    "text": "Gallowayburg Adventist School"
+  },
+  {
+    "id": 53,
+    "text": "Alstonville Adventist School"
+  },
+  {
+    "id": 54,
+    "text": "Horneburg Adventist School"
+  },
+  {
+    "id": 55,
+    "text": "Alvaradoville Adventist School"
+  },
+  {
+    "id": 56,
+    "text": "Mccallburg Adventist School"
+  },
+  {
+    "id": 57,
+    "text": "Henryville Adventist School"
+  },
+  {
+    "id": 58,
+    "text": "Nikkiburg Adventist School"
+  },
+  {
+    "id": 59,
+    "text": "Woodburg Adventist School"
+  },
+  {
+    "id": 60,
+    "text": "Randolphburg Adventist School"
+  },
+  {
+    "id": 61,
+    "text": "Kleinville Adventist School"
+  },
+  {
+    "id": 62,
+    "text": "Coxville Adventist School"
+  },
+  {
+    "id": 63,
+    "text": "Chandraville Adventist School"
+  },
+  {
+    "id": 64,
+    "text": "Jocelynville Adventist School"
+  },
+  {
+    "id": 65,
+    "text": "Albaburg Adventist School"
+  },
+  {
+    "id": 66,
+    "text": "Cherryburg Adventist School"
+  },
+  {
+    "id": 67,
+    "text": "Kelseyville Adventist School"
+  },
+  {
+    "id": 68,
+    "text": "Englishville Adventist School"
+  },
+  {
+    "id": 69,
+    "text": "Alfordburg Adventist School"
+  },
+  {
+    "id": 70,
+    "text": "Caseyburg Adventist School"
+  },
+  {
+    "id": 71,
+    "text": "Leonorville Adventist School"
+  },
+  {
+    "id": 72,
+    "text": "Gibsonville Adventist School"
+  },
+  {
+    "id": 73,
+    "text": "Nellville Adventist School"
+  },
+  {
+    "id": 74,
+    "text": "Carissaville Adventist School"
+  },
+  {
+    "id": 75,
+    "text": "Dollieburg Adventist School"
+  },
+  {
+    "id": 76,
+    "text": "Blackwellville Adventist School"
+  },
+  {
+    "id": 77,
+    "text": "Humphreyville Adventist School"
+  },
+  {
+    "id": 78,
+    "text": "Stevensonburg Adventist School"
+  },
+  {
+    "id": 79,
+    "text": "Murrayburg Adventist School"
+  },
+  {
+    "id": 80,
+    "text": "Hoganburg Adventist School"
+  },
+  {
+    "id": 81,
+    "text": "Connerville Adventist School"
+  },
+  {
+    "id": 82,
+    "text": "Hansonville Adventist School"
+  },
+  {
+    "id": 83,
+    "text": "Cassieburg Adventist School"
+  },
+  {
+    "id": 84,
+    "text": "Lucasburg Adventist School"
+  },
+  {
+    "id": 85,
+    "text": "Krystalburg Adventist School"
+  },
+  {
+    "id": 86,
+    "text": "Santanaville Adventist School"
+  },
+  {
+    "id": 87,
+    "text": "Lawrenceville Adventist School"
+  },
+  {
+    "id": 88,
+    "text": "Loraineburg Adventist School"
+  },
+  {
+    "id": 89,
+    "text": "Swansonville Adventist School"
+  },
+  {
+    "id": 90,
+    "text": "Maryburg Adventist School"
+  },
+  {
+    "id": 91,
+    "text": "Glendaville Adventist School"
+  },
+  {
+    "id": 92,
+    "text": "Rossburg Adventist School"
+  },
+  {
+    "id": 93,
+    "text": "Lorrieburg Adventist School"
+  },
+  {
+    "id": 94,
+    "text": "Jillianville Adventist School"
+  },
+  {
+    "id": 95,
+    "text": "Gracielaburg Adventist School"
+  },
+  {
+    "id": 96,
+    "text": "Joyceville Adventist School"
+  },
+  {
+    "id": 97,
+    "text": "Mccarthyburg Adventist School"
+  },
+  {
+    "id": 98,
+    "text": "Kathrineville Adventist School"
+  },
+  {
+    "id": 99,
+    "text": "Cherieburg Adventist School"
+  }
+]
