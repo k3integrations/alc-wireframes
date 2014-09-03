@@ -228,54 +228,6 @@
 
 //# sourceMappingURL=../../maps/alc-base/controllers/search.js.map
 (function() {
-  angular.module('ALC.Base').filter('emailShortener', function() {
-    return function(email) {
-      var first, last, lastParts, part, _ref;
-      if (email == null) {
-        email = "";
-      }
-      _ref = email.split("@"), first = _ref[0], last = _ref[1];
-      if (!last) {
-        return email;
-      }
-      lastParts = (function() {
-        var _i, _len, _ref1, _results;
-        _ref1 = last.split('.');
-        _results = [];
-        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-          part = _ref1[_i];
-          if (part.length > 4) {
-            _results.push(part.slice(0, 3) + '…');
-          } else {
-            _results.push(part);
-          }
-        }
-        return _results;
-      })();
-      first = first.length > 7 ? first.slice(0, 3) + "…" + first.slice(first.length - 3, +first.length + 1 || 9e9) : first;
-      return first + "@" + lastParts.join('.');
-    };
-  });
-
-}).call(this);
-
-//# sourceMappingURL=../../maps/alc-base/filters/emailShortener.js.map
-(function() {
-  angular.module('ALC.Base').filter('passwordDots', function() {
-    return function(input) {
-      if (input == null) {
-        input = '';
-      }
-      return input.split('').map((function(m) {
-        return "\u2022";
-      })).join('');
-    };
-  });
-
-}).call(this);
-
-//# sourceMappingURL=../../maps/alc-base/filters/passwordDots.js.map
-(function() {
   var base;
 
   base = angular.module('ALC.Base');
@@ -490,6 +442,54 @@
 }).call(this);
 
 //# sourceMappingURL=../../maps/alc-base/directives/stopClickPropagation.js.map
+(function() {
+  angular.module('ALC.Base').filter('emailShortener', function() {
+    return function(email) {
+      var first, last, lastParts, part, _ref;
+      if (email == null) {
+        email = "";
+      }
+      _ref = email.split("@"), first = _ref[0], last = _ref[1];
+      if (!last) {
+        return email;
+      }
+      lastParts = (function() {
+        var _i, _len, _ref1, _results;
+        _ref1 = last.split('.');
+        _results = [];
+        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+          part = _ref1[_i];
+          if (part.length > 4) {
+            _results.push(part.slice(0, 3) + '…');
+          } else {
+            _results.push(part);
+          }
+        }
+        return _results;
+      })();
+      first = first.length > 7 ? first.slice(0, 3) + "…" + first.slice(first.length - 3, +first.length + 1 || 9e9) : first;
+      return first + "@" + lastParts.join('.');
+    };
+  });
+
+}).call(this);
+
+//# sourceMappingURL=../../maps/alc-base/filters/emailShortener.js.map
+(function() {
+  angular.module('ALC.Base').filter('passwordDots', function() {
+    return function(input) {
+      if (input == null) {
+        input = '';
+      }
+      return input.split('').map((function(m) {
+        return "\u2022";
+      })).join('');
+    };
+  });
+
+}).call(this);
+
+//# sourceMappingURL=../../maps/alc-base/filters/passwordDots.js.map
 (function() {
   angular.module('ALC.Base').factory('$state', function() {
     return {
