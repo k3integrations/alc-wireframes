@@ -21,23 +21,48 @@
     fontweight: 'lighter'
   }).run();
 
-  app = angular.module('ALC.Base', ['mm.foundation', 'ngDropzone', 'ui.utils', 'ngAnimate', 'ui.select2']);
+  app = angular.module('ALC.Base', ['mm.foundation', 'ngDropzone', 'ui.utils', 'ngAnimate', 'ui.select', 'ngTagsInput', 'toastr']);
+
+  app.config(function(uiSelectConfig, toastrConfig, $httpProvider) {
+    uiSelectConfig.theme = 'select2';
+    angular.extend(toastrConfig, {
+      positionClass: 'toast-top-right'
+    });
+    $httpProvider.defaults.headers.common['X-Requested-With'] = "XMLHttpRequest";
+    return $httpProvider.defaults.headers.common.Accept = "application/json";
+  });
 
 }).call(this);
 
 //# sourceMappingURL=../maps/alc-base/main.js.map
 (function() {
-  angular.module('ALC.Base').controller('registerCtrl', function($scope, $http, $state, $rootScope) {
+  angular.module('ALC.Base').controller('registerCtrl', function($scope, $http, $state, $rootScope, NADToolkit) {
     'use strict';
     var formData, formIsValid, isCurrentlyValid;
     $scope.roleStates = {
       'student': ['role', 'studentId', 'name', 'dob', 'email', 'password', 'avatar', 'confirm'],
-      'teacher': ['role', 'teacherId', 'name', 'dob', 'email', 'password', 'avatar', 'confirm'],
+      'teacher': ['role', 'teacherRole', 'name', 'dob', 'email', 'password', 'avatar', 'confirm'],
+      'schoolTeacher': ['role', 'teacherRole', 'schoolId', 'name', 'dob', 'email', 'password', 'avatar', 'confirm'],
+      'toolkitTeacher': ['role', 'teacherRole', 'edToolkitLogin', 'dob', 'password', 'avatar', 'confirm'],
       'pastor': ['role', 'churchIds', 'name', 'email', 'password', 'avatar', 'confirm'],
       'org leader': ['role', 'adminRole', 'orgId', 'name', 'dob', 'email', 'password', 'avatar', 'confirm'],
       'edu org leader': ['role', 'adminRole', 'edToolkitLogin', 'password', 'avatar', 'confirm'],
       'min org leader': ['role', 'adminRole', 'orgId', 'name', 'dob', 'email', 'password', 'avatar', 'confirm'],
       'person': ['role', 'churchId', 'name', 'email', 'password', 'avatar', 'confirm']
+    };
+    $scope.edToolkitImport = function() {
+      $scope.loggingIn = true;
+      return NADToolkit["import"]().then(function(data) {
+        $scope.registrant.edToolkitImported = true;
+        return $scope.regForm.$valid = true;
+      }, function(data) {
+        return alert(data);
+      });
+    };
+    $scope.edToolkitInit = function() {
+      if (!$scope.registrant.edToolkitImported) {
+        return $scope.regForm.$valid = false;
+      }
     };
     $scope.swapCurrentState = function(newState) {
       var idx;
@@ -45,7 +70,9 @@
       return $scope.currentState = $scope.states[idx] = newState;
     };
     $scope.form = {};
-    $scope.registrant = {};
+    if ($scope.registrant == null) {
+      $scope.registrant = {};
+    }
     $scope.validStates = {};
     $scope.setStates = function(role, rewind) {
       var states;
@@ -60,6 +87,9 @@
       if (rewind) {
         return $scope.currentState = $scope.states[0];
       }
+    };
+    $scope.dzInit = function(a, b, c, d, e) {
+      return $scope.dropzone = this;
     };
     $scope.avatarThumb = function(file, dataURI) {
       $scope.registrant.avatarURI = dataURI;
@@ -156,14 +186,14 @@
       _ref = $scope.states;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         stateValue = _ref[_i];
-        if ($scope.validStates[stateValue] === false) {
+        if ($scope.validStates[stateValue] !== true) {
           return false;
         }
       }
       return true;
     };
     formData = function() {
-      var data, stateValue, value, _i, _len, _ref;
+      var church, data, objectsToId, param, stateValue, value, _i, _j, _len, _len1, _ref;
       data = {};
       _ref = $scope.states;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -173,17 +203,74 @@
         }
         value = $scope.registrant[stateValue];
         if (value) {
-          data[stateValue] = value;
+          data[_.str.underscored(stateValue)] = value;
+        }
+      }
+      delete data['avatar'];
+      if (data.name) {
+        data["first_name"] = data.name.first;
+        data["last_name"] = data.name.last;
+        delete data['name'];
+      }
+      if (data.dob) {
+        data['date_of_birth'] = data.dob;
+        delete data['dob'];
+      }
+      if (data.church_ids) {
+        data.church_ids = ((function() {
+          var _j, _len1, _ref1, _results;
+          _ref1 = data.church_ids;
+          _results = [];
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            church = _ref1[_j];
+            _results.push(church.id);
+          }
+          return _results;
+        })()).join(',');
+      }
+      objectsToId = ['org_id', 'school_id', 'church_id'];
+      for (_j = 0, _len1 = objectsToId.length; _j < _len1; _j++) {
+        param = objectsToId[_j];
+        if (data[param]) {
+          data[param] = data[param].id;
         }
       }
       return data;
     };
+    $scope.dzSuccess = function() {
+      return $state.go("dashboard");
+    };
+    $scope.dzError = function(file, response, xhr) {
+      var key, value, _results;
+      file.status = Dropzone.QUEUED;
+      if ((typeof response) === "string") {
+        return alert("Something went wrong");
+      } else {
+        _results = [];
+        for (key in response) {
+          value = response[key];
+          _results.push(alert(key + " " + value));
+        }
+        return _results;
+      }
+    };
+    $scope.dzSending = function(file, xhr, fd) {
+      var form_data, key, value, _results;
+      form_data = formData();
+      _results = [];
+      for (key in form_data) {
+        value = form_data[key];
+        _results.push(fd.append("user[" + key + "]", value));
+      }
+      return _results;
+    };
     return $scope.submitForm = function(event) {
+      $scope.setValidity();
       if (event) {
         event.preventDefault();
       }
       if (formIsValid()) {
-        return $http.post('users', formData());
+        return $scope.dropzone.processQueue();
       }
     };
   });
@@ -192,11 +279,39 @@
 
 //# sourceMappingURL=../../maps/alc-base/controllers/register.js.map
 (function() {
+  'use strict';
+
+  /**
+    * @ngdoc function
+    * @name ALC.Base.controller:resourceCtrl
+    * @description
+    * # resourceCtrl
+    * Controller of the ALC.Base
+   */
+  angular.module('ALC.Base').controller('resourceCtrl', function($scope, $modal, toastr, ceuManager) {
+    return $scope.takeCEU = function() {
+      this.ceuModal = $modal.open({
+        templateUrl: 'partials/take-ceu-form.html',
+        windowClass: 'small'
+      });
+      return this.ceuModal.result.then(function(result) {
+        return ceuManager.requestWithAnswers(result).then(function() {
+          toastr.success("Successfully submitted your CEU answers!");
+          return $scope.ceuCreditGiven = true;
+        }, function() {
+          return toastr.error("Could not submit your CEU answers. Please try again.");
+        });
+      });
+    };
+  });
+
+}).call(this);
+
+//# sourceMappingURL=../../maps/alc-base/controllers/resource.js.map
+(function() {
   angular.module('ALC.Base').controller('searchCtrl', function($scope, $http, $rootScope, search) {
     var fetchNewResults;
-    $scope.doSearch = function() {
-      return fetchNewResults();
-    };
+    $scope.schools = [];
     $scope.filters = {
       categories: {
         all: true
@@ -206,10 +321,16 @@
       },
       file_types: {
         all: true
+      },
+      core_competencies: {
+        all: true
       }
     };
     fetchNewResults = function() {
-      return search.fetch($scope.query, $scope.filters).then(function(response) {
+      var filters;
+      console.log($scope.filters);
+      filters = angular.copy($scope.filters);
+      return search.fetch($scope.query, filters).then(function(response) {
         return $scope.results = response.data;
       });
     };
@@ -291,6 +412,29 @@
 }).call(this);
 
 //# sourceMappingURL=../../maps/alc-base/directives/checkboxGroup.js.map
+(function() {
+  'use strict';
+
+  /**
+    * @ngdoc directive
+    * @name ALC.Base.directive:alcCreditBadge
+    * @description
+    * # alcCreditBadge
+   */
+  angular.module('ALC.Base').directive('alcCreditBadge', function() {
+    return {
+      template: "<span class=\"credit-amount\"\n  ng-pluralize count=\"creditAmount\"\n  when=\"{'0': 'No Credit', 1:'1 cr', 'other': '{} crs'}\"\n></span>",
+      restrict: 'A',
+      scope: {
+        creditAmount: '=alcCreditBadge'
+      },
+      link: function(scope, element, attrs) {}
+    };
+  });
+
+}).call(this);
+
+//# sourceMappingURL=../../maps/alc-base/directives/creditBadge.js.map
 (function() {
   angular.module('ALC.Base').directive('alcExitOffCanvas', function() {
     return {
@@ -435,6 +579,42 @@
 
 //# sourceMappingURL=../../maps/alc-base/directives/resultSection.js.map
 (function() {
+  'use strict';
+
+  /**
+    * @ngdoc directive
+    * @name ALC.Base.directive:alcServerForm
+    * @description
+    * # alcServerForm
+   */
+  angular.module('ALC.Base').directive('alcServerForm', function() {
+    return {
+      restrict: 'A',
+      require: 'form',
+      priority: -1,
+      link: function(scope, element, attrs, formController) {
+        return element.on('submit', function(e) {
+          var input, propName;
+          if (formController.$invalid) {
+            e.preventDefault();
+            for (propName in formController) {
+              input = formController[propName];
+              if (input.$setViewValue != null) {
+                input.$setViewValue(input.$viewValue);
+              }
+            }
+            e.stopImmediatePropagation();
+          }
+          return scope.$apply();
+        });
+      }
+    };
+  });
+
+}).call(this);
+
+//# sourceMappingURL=../../maps/alc-base/directives/serverForm.js.map
+(function() {
   angular.module('ALC.Base').directive('alcShareResource', function(resourceCollection, $animate) {
     return {
       scope: {
@@ -543,10 +723,107 @@
 
 //# sourceMappingURL=../../maps/alc-base/filters/passwordDots.js.map
 (function() {
-  angular.module('ALC.Base').factory('resourceCollection', function($modal) {
+  'use strict';
+  angular.module('ALC.Base').filter('pluralize', function() {
+    return function(singular, count, plural) {
+      if (plural == null) {
+        plural = "" + singular + "s";
+      }
+      if (count === 1) {
+        return singular;
+      } else {
+        return plural;
+      }
+    };
+  });
+
+}).call(this);
+
+//# sourceMappingURL=../../maps/alc-base/filters/pluralize.js.map
+(function() {
+  'use strict';
+  angular.module('ALC.Base').filter('truncate', function() {
+    return function(text, length, omission) {
+      if (length == null) {
+        length = 30;
+      }
+      if (omission == null) {
+        omission = '…';
+      }
+      if (text.length <= length) {
+        return text;
+      }
+      return text.slice(0, length - omission.length) + omission;
+    };
+  });
+
+}).call(this);
+
+//# sourceMappingURL=../../maps/alc-base/filters/truncate.js.map
+(function() {
+  angular.module("ALC.Base").factory("NADToolkit", function($q) {
+    var NADToolkit;
+    return NADToolkit = (function() {
+      function NADToolkit() {}
+
+      NADToolkit["import"] = function() {
+        return $q.when({});
+      };
+
+      return NADToolkit;
+
+    })();
+  });
+
+}).call(this);
+
+//# sourceMappingURL=../../maps/alc-base/services/NADToolkit.js.map
+(function() {
+  'use strict';
+
+  /**
+    * @ngdoc service
+    * @name ALC.Base.ceuManager
+    * @description
+    * # ceuManager
+    * Provider in the ALC.Base.
+   */
+  angular.module('ALC.Base').provider('ceuManager', function() {
+    var CeuManager, path;
+    path = '/resource/ceu_request';
+    CeuManager = (function() {
+      function CeuManager($http) {
+        this.http = $http;
+      }
+
+      CeuManager.prototype.setPath = function(_path) {
+        return path = _path;
+      };
+
+      CeuManager.prototype.requestWithAnswers = function(answers) {
+        return this.http.post(path, answers);
+      };
+
+      return CeuManager;
+
+    })();
+    this.setPath = CeuManager.setPath;
+    this.$get = [
+      '$http', function($http) {
+        return new CeuManager($http);
+      }
+    ];
+  });
+
+}).call(this);
+
+//# sourceMappingURL=../../maps/alc-base/services/ceuManager.js.map
+(function() {
+  angular.module('ALC.Base').factory('resourceCollection', function($modal, toastr) {
     var service;
     service = {
-      collection: []
+      collection: [],
+      modal: {}
     };
     service.add = function(id) {
       if (!service.contains(id)) {
@@ -557,6 +834,10 @@
       return _.remove(service.collection, function(item) {
         return item === id;
       });
+    };
+    service.reset = function() {
+      service.collection = [];
+      return service.modal = {};
     };
     service.contains = function(id) {
       return _.contains(service.collection, id);
@@ -570,23 +851,32 @@
       }, listener);
     };
     service.open = function() {
-      var modal;
-      return modal = $modal.open({
+      service.modal = $modal.open({
         templateUrl: 'partials/resource-collection-modal.html',
-        controller: function($scope, collection, mockModels) {
-          return $scope.resources = _.map(collection, function(id) {
-            return mockModels.resources.get(id);
-          });
-        },
-        resolve: {
-          collection: function() {
-            return service.collection;
-          }
-        },
         windowClass: 'medium'
+      });
+      return service.modal.result.then(function(msg) {
+        return toastr.info(msg);
       });
     };
     return service;
+  });
+
+  angular.module('ALC.Base').controller('resourceCollectionCtrl', function($scope, resourceCollection, mockModels) {
+    $scope.resources = _.map(resourceCollection.collection, function(id) {
+      return mockModels.resources.get(id);
+    });
+    $scope.count = $scope.resources.length;
+    $scope.showCollection = $scope.count === 1;
+    return $scope.sendIt = function(msg) {
+      if ($scope.resourceCollectionForm.$valid) {
+        resourceCollection.modal.close(msg);
+        return resourceCollection.reset();
+      } else {
+        $scope.resourceCollectionForm.recipients.$dirty = true;
+        return $scope.resourceCollectionForm.message.$dirty = true;
+      }
+    };
   });
 
 }).call(this);
@@ -720,74 +1010,261 @@
 
 //# sourceMappingURL=../maps/alc-wire/jquery.parseParams.js.map
 (function() {
-  var app,
-    __slice = [].slice;
+  var app, createUser;
 
-  app = angular.module('ALC.Wire', ['ALC.Base', 'ui.router', 'ngMockE2E']);
+  app = angular.module('ALC.Wire', ['ALC.Base', 'ui.router', 'ngMockE2E', 'ALC.Wire.Submit']);
 
-  app.run(function($rootScope, resourceCollection) {
-    $rootScope.flatten = function() {
-      var objects;
-      objects = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-      return _.merge.apply(_, [{}].concat(__slice.call(objects)));
+  createUser = function(scope, attrs) {
+    var admin, login;
+    if (attrs == null) {
+      attrs = {};
+    }
+    login = attrs.login || '';
+    admin = login.match(/^admin@/) != null;
+    return scope.wfUser != null ? scope.wfUser : scope.wfUser = _.merge({}, {
+      name: {
+        first: faker.name.firstName(),
+        last: faker.name.lastName()
+      },
+      admin: admin
+    }, attrs);
+  };
+
+  app.run(function($rootScope, $state, resourceCollection, $log) {
+    $rootScope._merge = _.merge;
+    $rootScope.resourceCollection = resourceCollection;
+    $rootScope.$on('$stateChangeSuccess', function(e, to, toParams) {
+      if (toParams.autoLogin === 'true') {
+        createUser($rootScope);
+      }
+    });
+    $rootScope.$on('$stateChangeSuccess', function(e, t, tp, from, fromParams) {
+      $state.previous = from;
+      $state.previousParams = fromParams;
+    });
+    $state.havePrevious = function() {
+      var _ref;
+      return ((_ref = $state.previous) != null ? _ref.name : void 0) !== '';
     };
-    $rootScope.JSONify = function(object) {
-      return JSON.stringify(object);
+    return $state.goBack = function() {
+      if ($state.havePrevious()) {
+        return $state.go($state.previous.name, $state.previousParams);
+      } else {
+        return $log.error('Can’t go back to non-existent previous state.');
+      }
     };
-    return $rootScope.resourceCollection = resourceCollection;
   });
 
   app.config(function($stateProvider, $urlRouterProvider) {
     'use strict';
+    var addCourseToMyCourses, dashboardOrPay;
+    $stateProvider.decorator('url', function(state, urlMatcher) {
+      var original, _ref;
+      original = urlMatcher(state);
+      if ((original != null ? (_ref = original.sourceSearch) != null ? _ref.match : void 0 : void 0) != null) {
+        if (!original.sourceSearch.match(/\?autoLogin\b/)) {
+          return original.concat('?autoLogin');
+        }
+      }
+      return original;
+    });
+    addCourseToMyCourses = function(rootScope, mockModels, id) {
+      if (rootScope.wfMyCourses == null) {
+        rootScope.wfMyCourses = [];
+      }
+      return rootScope.wfMyCourses.push(mockModels.courses.get(+id));
+    };
     $urlRouterProvider.otherwise('/');
+    dashboardOrPay = function($rootScope, $state, course) {
+      if (course.cost > 0) {
+        $rootScope.wfCourseRegistering = course;
+        return $state.go('course_pay');
+      } else {
+        return $state.go('dashboard');
+      }
+    };
     return $stateProvider.state('home', {
       url: '/',
       templateUrl: 'partials/home.html'
     }).state('register', {
-      url: '/register',
-      templateUrl: 'partials/register.html'
-    }).state('dashboard', {
-      url: '/dashboard',
-      templateUrl: 'partials/dashboard.html',
-      controller: function($rootScope) {
-        return $rootScope.wfUser || ($rootScope.wfUser = {
-          name: {
-            first: faker.Name.firstName(),
-            last: faker.Name.lastName()
+      url: '/register?courseId',
+      templateUrl: 'partials/register.html',
+      controller: function($scope, $rootScope, $state, mockModels) {
+        $scope.registrant = {};
+        if ($state.params.courseId != null) {
+          $scope.wfCourse = mockModels.courses.get(+$state.params.courseId);
+        }
+        return Dropzone.prototype.processQueue = function() {
+          createUser($rootScope, {
+            login: $scope.registrant.email
+          });
+          if ($state.params.courseId != null) {
+            addCourseToMyCourses($rootScope, mockModels, $state.params.courseId);
           }
-        });
+          return dashboardOrPay($rootScope, $state, $scope.wfCourse);
+        };
+      }
+    }).state('_dashboard', {
+      url: '/dashboard?empty',
+      abstract: true,
+      templateUrl: 'partials/dashboard.html',
+      controller: function($rootScope, $scope, $state) {
+        $scope.wfEmptyDashboard = $state.params.empty === 'true';
+        if (!$rootScope.wfUser) {
+          if ($state.havePrevious()) {
+            return $state.goBack();
+          } else {
+            return $state.go('home');
+          }
+        }
+      }
+    }).state('dashboard', {
+      url: '',
+      parent: '_dashboard',
+      templateUrl: 'partials/dashboard.full.html',
+      controller: function($scope, $state, mockModels) {
+        if ($state.params.empty === 'true') {
+          $scope.wfCoursesTeaching = [];
+          $scope.wfCoursesEnrolled = [];
+          $scope.wfCoursesComplete = [];
+          return $scope.wfECertifications = [];
+        } else {
+          $scope.wfCoursesTeaching = mockModels.courses.all(3);
+          $scope.wfCoursesEnrolled = mockModels.courses.all(5, 25);
+          $scope.wfCoursesComplete = mockModels.courses.all(2, 50);
+          $scope.wfCredits = mockModels.credits.all(5);
+          return $scope.wfECertifications = [
+            {
+              title: faker.lorem.words(3).join(' ')
+            }, {
+              title: faker.lorem.words(3).join(' ')
+            }
+          ];
+        }
+      }
+    }).state('dashboard.taught', {
+      url: '/taught',
+      parent: '_dashboard',
+      templateUrl: 'partials/dashboard.taught.html',
+      controller: function($scope, mockModels) {
+        return $scope.wfCoursesTaught = mockModels.courses.all(7, 15);
+      }
+    }).state('dashboard.taken', {
+      url: '/taken',
+      parent: '_dashboard',
+      templateUrl: 'partials/dashboard.taken.html',
+      controller: function($scope, mockModels) {
+        return $scope.wfCoursesTaken = mockModels.courses.all(2, 35);
+      }
+    }).state('dashboard.completed', {
+      url: '/completed',
+      parent: '_dashboard',
+      templateUrl: 'partials/dashboard.completed.html',
+      controller: function($scope, mockModels) {
+        return $scope.wfCoursesCompleted = mockModels.courses.all(22, 60);
+      }
+    }).state('dashboard.eportfolio', {
+      url: '/ePortfolio',
+      parent: '_dashboard',
+      templateUrl: 'partials/dashboard.ePortfolio.html',
+      controller: function($scope, mockModels) {
+        $scope.wfCredits = mockModels.credits.all(5, 4);
+        return $scope.wfECertifications = [
+          {
+            title: faker.lorem.words(3).join(' ')
+          }, {
+            title: faker.lorem.words(3).join(' ')
+          }, {
+            title: faker.lorem.words(3).join(' ')
+          }, {
+            title: faker.lorem.words(3).join(' ')
+          }, {
+            title: faker.lorem.words(3).join(' ')
+          }, {
+            title: faker.lorem.words(3).join(' ')
+          }, {
+            title: faker.lorem.words(3).join(' ')
+          }, {
+            title: faker.lorem.words(3).join(' ')
+          }, {
+            title: faker.lorem.words(3).join(' ')
+          }, {
+            title: faker.lorem.words(3).join(' ')
+          }
+        ];
       }
     }).state('login', {
-      params: ['login', 'password'],
+      params: {
+        'login': {},
+        'returnTo': {}
+      },
       controller: function($stateParams, $state, $rootScope) {
         var login;
-        login = $stateParams.login || '';
-        $rootScope.wfUser = {
-          login: login,
-          name: {
-            first: faker.Name.firstName(),
-            last: faker.Name.lastName()
-          },
-          admin: login.match(/^admin@/) != null
-        };
-        return $state.go('dashboard');
+        login = $stateParams.login || {};
+        createUser($rootScope, {
+          login: login.email
+        });
+        if ($state.havePrevious()) {
+          return $state.goBack();
+        } else {
+          return $state.go('dashboard');
+        }
       }
     }).state('logout', {
+      url: '/logout',
       controller: function($state, $rootScope) {
         $rootScope.wfUser = void 0;
-        return $state.go('home');
+        if ($state.havePrevious()) {
+          return $state.goBack();
+        } else {
+          return $state.go('home');
+        }
+      }
+    }).state('profile', {
+      url: '/profile',
+      parent: '_dashboard',
+      templateUrl: 'partials/profile.html',
+      controller: function($scope, $rootScope, mockModels) {
+        var user;
+        user = mockModels.users.generate();
+        $scope.wfUser = _.merge({}, user, $rootScope.wfUser);
+        return $rootScope.wfUser = $scope.wfUser;
+      }
+    }).state('profile.edit', {
+      url: '/profile/edit',
+      parent: '_dashboard',
+      templateUrl: 'partials/edit-profile.html',
+      controller: function($scope, $rootScope, mockModels) {
+        var user;
+        user = mockModels.users.generate();
+        $scope.wfUser = _.merge({}, user, $rootScope.wfUser);
+        return $rootScope.wfUser = $scope.wfUser;
+      }
+    }).state('profile.changePassword', {
+      url: '/profile/change-password',
+      parent: '_dashboard',
+      templateUrl: 'partials/change-password.html',
+      controller: function($scope, $rootScope, mockModels) {
+        var user;
+        user = mockModels.users.generate();
+        $scope.wfUser = _.merge({}, user, $rootScope.wfUser);
+        return $rootScope.wfUser = $scope.wfUser;
       }
     }).state('search', {
       url: '/search/:category',
+      params: {
+        'category': void 0,
+        'query': void 0
+      },
       templateUrl: 'partials/search-results.html',
       controller: function($scope, $stateParams, $rootScope) {
-        var category;
+        var category, query;
         if (category = $stateParams.category) {
           $scope.wfDefaultCategory = category;
         }
-        return $scope.$watch('query', function(query) {
+        if (query = $stateParams.query) {
           return $rootScope.wfSearchQuery = query;
-        });
+        }
       }
     }).state('new resource', {
       url: '/resources/new',
@@ -799,11 +1276,12 @@
         return $scope.wfResource = {};
       }
     }).state('create resource', {
-      params: ['resourceJSON'],
+      params: {
+        'resource': {}
+      },
       controller: function($stateParams, $state, mockModels) {
         var params, resource;
-        params = JSON.parse($stateParams.resourceJSON);
-        params = _.pick(params, _.identity);
+        params = _.pick($stateParams.resource, _.identity);
         resource = mockModels.resources.create(params);
         return $state.go('resource', {
           id: resource.id
@@ -820,11 +1298,13 @@
         };
       }
     }).state('update resource', {
-      params: ['resourceJSON', 'id'],
+      params: {
+        'resource': {},
+        'id': ''
+      },
       controller: function($stateParams, $state, mockModels) {
         var params, resource;
-        params = JSON.parse($stateParams.resourceJSON);
-        params = _.pick(params, _.identity);
+        params = _.pick($stateParams.resource, _.identity);
         resource = mockModels.resources.update(+$stateParams.id, params);
         return $state.go('resource', {
           id: resource.id
@@ -833,8 +1313,68 @@
     }).state('resource', {
       url: '/resources/:id',
       templateUrl: 'partials/resource.html',
+      controller: function($scope, $stateParams, mockModels, $rootScope, ceuManager) {
+        $scope.wfResource = mockModels.resources.get(+$stateParams.id);
+        if ($rootScope.wfResourcesWithCreditGiven == null) {
+          $rootScope.wfResourcesWithCreditGiven = [];
+        }
+        if (~$rootScope.wfResourcesWithCreditGiven.indexOf($scope.wfResource)) {
+          $scope.wfCreditGiven = true;
+        }
+        ceuManager._requestWithAnswers = ceuManager.requestWithAnswers;
+        return ceuManager.requestWithAnswers = function(answers) {
+          return this._requestWithAnswers(answers).then(function() {
+            $rootScope.wfResourcesWithCreditGiven.push($scope.wfResource);
+          });
+        };
+      }
+    }).state('course', {
+      url: '/courses/:id',
+      templateUrl: 'partials/course.html',
       controller: function($scope, $stateParams, mockModels) {
-        return $scope.wfResource = mockModels.resources.get(+$stateParams.id);
+        $scope.wfCourse = mockModels.courses.get(+$stateParams.id);
+        return $scope.teacherNames = function(teachers) {
+          return _.str.toSentence(_.map(teachers, function(teacher) {
+            return "" + teacher.name.first + " " + teacher.name.last;
+          }));
+        };
+      }
+    }).state('course_sign_up', {
+      params: {
+        id: null
+      },
+      controller: function($state, mockModels, $rootScope, $stateParams) {
+        var course, id;
+        if ($rootScope.wfUser) {
+          id = +$stateParams.id;
+          course = mockModels.courses.get(id);
+          addCourseToMyCourses($rootScope, mockModels, id);
+          return dashboardOrPay($rootScope, $state, course);
+        } else {
+          return $state.go('register', {
+            courseId: $stateParams.id
+          });
+        }
+      }
+    }).state('course_pay', {
+      url: '/register/pay',
+      templateUrl: 'partials/course-pay.html'
+    }).state('course_paid', {
+      controller: function($state) {
+        return $state.go('dashboard');
+      }
+    }).state('get_ceu_credit', {
+      url: '/get_ceu_credit',
+      templateUrl: 'partials/get-ceu-credit.html',
+      controller: function($state) {}
+    }).state('submit_ceu_credit', {
+      params: {
+        answers: {}
+      },
+      templateUrl: 'partials/get-ceu-credit.html',
+      controller: function($state, $rootScope) {
+        $state.go('dashboard');
+        return $rootScope.wfFlash = "Successfully submitted event for CEU credit!";
       }
     });
   });
@@ -843,15 +1383,52 @@
 
 //# sourceMappingURL=../maps/alc-wire/main.js.map
 (function() {
+  'use strict';
+  var app;
+
+  app = angular.module('ALC.Wire.Submit', ['ui.router']);
+
+
+  /**
+    * @ngdoc directive
+    * @name ALC.Wire.directive:alcSubmit
+    * @description
+    * # alcSubmit
+   */
+
+  angular.module('ALC.Wire.Submit').directive('wfSubmit', function($state) {
+    return {
+      restrict: 'A',
+      link: function(scope, element, attrs) {
+        return element.on('submit', function(e) {
+          e.preventDefault();
+          $state.go(attrs.action, scope.$eval(attrs.wfSubmit));
+          return scope.$apply();
+        });
+      }
+    };
+  });
+
+}).call(this);
+
+//# sourceMappingURL=../../maps/alc-wire/directives/submit.js.map
+(function() {
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module('ALC.Wire').factory('mockModels', function() {
-    var A, AdventistOrganizationFactory, ChurchFactory, ConferenceFactory, ContentFactory, CourseFactory, D, I, L, MockModelFactory, R, ResourceFactory, SchoolFactory, UnionFactory, capitalizeStr, capitalizeText, defaultCount, mockModels, sentences, titleCaseText, words;
-    A = faker.Address;
-    D = faker.Date;
-    I = faker.Internet;
-    L = faker.Lorem;
+    var A, AdventistOrganizationFactory, C, ChurchFactory, ConferenceFactory, ContentPageFactory, CourseFactory, CreditFactory, D, F, H, Ha, I, IMG, L, MockModelFactory, N, P, R, ResourceFactory, SchoolFactory, UnionFactory, UserFactory, capitalizeStr, capitalizeText, defaultCount, mockModels, sentences, titleCaseText, words;
+    A = faker.address;
+    C = faker.company;
+    D = faker.date;
+    F = faker.finance;
+    Ha = faker.hacker;
+    H = faker.helpers;
+    IMG = faker.image;
+    I = faker.internet;
+    L = faker.lorem;
+    N = faker.name;
+    P = faker.phone;
     R = faker.random;
     sentences = function(count) {
       return L.sentences(count).split("\n").join('. ') + '.';
@@ -869,23 +1446,25 @@
       return str.charAt(0).toUpperCase() + str.substr(1);
     };
     MockModelFactory = (function() {
-      function MockModelFactory(count) {
+      function MockModelFactory(count, models) {
         this.count = count;
+        this.models = models;
         this.lastId = 0;
-        this.generateCollection();
-      }
-
-      MockModelFactory.prototype.generateCollection = function() {
-        var i;
-        return this.collection = (function() {
-          var _i, _ref, _results;
-          _results = [];
-          for (i = _i = 1, _ref = this.count; 1 <= _ref ? _i <= _ref : _i >= _ref; i = 1 <= _ref ? ++_i : --_i) {
-            _results.push(this.generate());
+        Object.defineProperty(this, 'collection', {
+          get: function() {
+            var i;
+            this._collection || (this._collection = (function() {
+              var _i, _ref, _results;
+              _results = [];
+              for (i = _i = 1, _ref = this.count; 1 <= _ref ? _i <= _ref : _i >= _ref; i = 1 <= _ref ? ++_i : --_i) {
+                _results.push(this.generate());
+              }
+              return _results;
+            }).call(this));
+            return this._collection;
           }
-          return _results;
-        }).call(this);
-      };
+        });
+      }
 
       MockModelFactory.prototype.create = function(attrs) {
         var newObj;
@@ -930,6 +1509,88 @@
       return MockModelFactory;
 
     })();
+    UserFactory = (function(_super) {
+      __extends(UserFactory, _super);
+
+      function UserFactory() {
+        return UserFactory.__super__.constructor.apply(this, arguments);
+      }
+
+      UserFactory.prototype.generateDateOfBirth = function() {
+        return D.between(moment().subtract(50, 'years'), moment().subtract(18, 'years'));
+      };
+
+      UserFactory.prototype.generateChurchId = function() {
+        return H.randomize(_.pluck(this.models.churches.all(), 'id'));
+      };
+
+      UserFactory.prototype.generateSchoolId = function() {
+        return H.randomize(_.pluck(this.models.schools.all(), 'id'));
+      };
+
+      UserFactory.prototype.generateStudentId = function() {
+        var i, numbers;
+        numbers = '0123456789';
+        return '' + ((function() {
+          var _i, _results;
+          _results = [];
+          for (i = _i = 1; _i <= 9; i = ++_i) {
+            _results.push(H.randomize(numbers));
+          }
+          return _results;
+        })()).join('');
+      };
+
+      UserFactory.prototype.generateStudentDateOfBirth = function() {
+        return D.between(moment().subtract(26, 'years'), moment().subtract(17, 'years'));
+      };
+
+      UserFactory.prototype.generateTeacherDateOfBirth = function() {
+        return D.between(moment().subtract(55, 'years'), moment().subtract(28, 'years'));
+      };
+
+      UserFactory.prototype.generate = function(role) {
+        var object;
+        object = {
+          id: this.generateId(),
+          role: role || H.randomize(['Student', 'Teacher', 'Pastor', 'Org. Leader', 'Person']),
+          name: {
+            first: N.firstName(),
+            last: N.lastName()
+          },
+          dob: this.generateDateOfBirth(),
+          email: I.email(),
+          password: I.password(),
+          avatar: I.avatar(),
+          churchId: this.generateChurchId()
+        };
+        if (object.role === 'Student') {
+          object.studentId = H.randomize([null, this.generateStudentId()]);
+          if (!object.studentId) {
+            object.schoolId = this.generateSchoolId();
+          }
+          object.dob = this.generateStudentDateOfBirth();
+        }
+        if (object.role === 'Teacher') {
+          object.teacherRole = H.randomize(['?']);
+          object.schoolId = this.generateSchoolId();
+          object.dob = this.generateTeacherDateOfBirth();
+        }
+        if (object.role === 'Pastor') {
+          object.churchIds = [this.generateChurchId()];
+        }
+        if (object.schoolId != null) {
+          object.school = this.models.schools.get(object.schoolId);
+        }
+        if (object.churchId != null) {
+          object.church = this.models.churches.get(object.churchId);
+        }
+        return object;
+      };
+
+      return UserFactory;
+
+    })(MockModelFactory);
     AdventistOrganizationFactory = (function(_super) {
       __extends(AdventistOrganizationFactory, _super);
 
@@ -949,7 +1610,7 @@
             var _i, _results;
             _results = [];
             for (i = _i = 1; _i <= 4; i = ++_i) {
-              _results.push(R.array_element(chars));
+              _results.push(H.randomize(chars));
             }
             return _results;
           })()).join('');
@@ -982,8 +1643,8 @@
       SchoolFactory.prototype.generateName = function() {
         var city, middle, suffix;
         city = A.city();
-        middle = R.array_element(['', 'Adventist']);
-        suffix = R.array_element(['University', 'College', 'Adventist University']);
+        middle = H.randomize(['', 'Adventist']);
+        suffix = H.randomize(['University', 'College', 'School', 'Elementary', 'Academy']);
         return ("" + city + " " + middle + " " + suffix).replace(/\s+/g, ' ');
       };
 
@@ -1000,7 +1661,7 @@
       ChurchFactory.prototype.generateName = function() {
         var city, middle;
         city = A.city();
-        middle = R.array_element(['SDA', 'Adventist', 'Seventh-day Adventist']);
+        middle = H.randomize(['SDA', 'Adventist', 'Seventh-day Adventist']);
         return "" + city + " " + middle + " Church";
       };
 
@@ -1038,20 +1699,41 @@
     CourseFactory = (function(_super) {
       __extends(CourseFactory, _super);
 
-      function CourseFactory(count, schools) {
-        this.schools = schools;
-        CourseFactory.__super__.constructor.call(this, count);
+      function CourseFactory() {
+        return CourseFactory.__super__.constructor.apply(this, arguments);
       }
+
+      CourseFactory.prototype.generateTeacher = function() {
+        return {
+          name: {
+            first: N.firstName(),
+            last: N.lastName()
+          }
+        };
+      };
 
       CourseFactory.prototype.generate = function() {
         return {
           id: this.generateId(),
           type: 'Course',
-          title: titleCaseText(words(R.number(1, 6))),
-          description: capitalizeText(sentences(R.number(1, 3))),
-          audience: R.array_element(['student', 'teacher', 'pastor']),
-          coreCompetency: R.array_element(['one', 'two', 'three', 'four', 'five']),
-          offeredBy: R.array_element(this.schools.all())
+          title: titleCaseText(words(H.randomNumber({
+            min: 1,
+            max: 6
+          }))),
+          description: capitalizeText(sentences(H.randomNumber({
+            min: 3,
+            max: 10
+          }))),
+          audience: H.randomize(['student', 'teacher', 'pastor']),
+          coreCompetency: H.randomize(['one', 'two', 'three', 'four', 'five']),
+          offeredBy: H.randomize(this.models.schools.all()),
+          cost: H.randomize([
+            0, H.randomNumber({
+              min: 10,
+              max: 50
+            })
+          ]),
+          teachers: [this.generateTeacher()]
         };
       };
 
@@ -1061,9 +1743,8 @@
     ResourceFactory = (function(_super) {
       __extends(ResourceFactory, _super);
 
-      function ResourceFactory(count, schools) {
-        this.schools = schools;
-        ResourceFactory.__super__.constructor.call(this, count);
+      function ResourceFactory() {
+        return ResourceFactory.__super__.constructor.apply(this, arguments);
       }
 
       ResourceFactory.prototype.generate = function() {
@@ -1071,17 +1752,28 @@
         object = {
           id: this.generateId(),
           type: 'Resource',
-          resourceType: R.array_element(['PDF', 'Video', 'PowerPoint', 'Link']),
-          title: titleCaseText(words(R.number(1, 6))),
-          description: capitalizeText(sentences(R.number(1, 5))),
-          audience: R.array_element(['student', 'teacher', 'pastor']),
-          source: R.array_element(this.schools.all()),
-          publishedAt: D.recent(365)
+          resourceType: H.randomize(['PDF', 'Video', 'PowerPoint', 'Link']),
+          title: titleCaseText(words(H.randomNumber({
+            min: 1,
+            max: 6
+          }))),
+          description: capitalizeText(sentences(H.randomNumber({
+            min: 1,
+            max: 5
+          }))),
+          audience: H.randomize(['student', 'teacher', 'pastor']),
+          source: H.randomize(this.models.schools.all()),
+          publishedAt: D.recent(365),
+          ceu: H.randomize([1, 2, 3])
         };
         if (~['PDF', 'PowerPoint'].indexOf(object.resourceType)) {
-          object.file = "/uploads/" + object.resourceType + "/" + (R.number(1000));
+          object.file = "/uploads/" + object.resourceType + "/" + (H.randomNumber({
+            max: 1000
+          }));
         } else {
-          object.url = "http://" + (I.domainName()) + "/file/" + (R.number(1000));
+          object.url = "http://" + (I.domainName()) + "/file/" + (H.randomNumber({
+            max: 1000
+          }));
         }
         return object;
       };
@@ -1089,36 +1781,66 @@
       return ResourceFactory;
 
     })(MockModelFactory);
-    ContentFactory = (function(_super) {
-      __extends(ContentFactory, _super);
+    ContentPageFactory = (function(_super) {
+      __extends(ContentPageFactory, _super);
 
-      function ContentFactory() {
-        return ContentFactory.__super__.constructor.apply(this, arguments);
+      function ContentPageFactory() {
+        return ContentPageFactory.__super__.constructor.apply(this, arguments);
       }
 
-      ContentFactory.prototype.generate = function() {
+      ContentPageFactory.prototype.generate = function() {
         return {
           id: this.generateId(),
           type: 'ContentPage',
-          title: titleCaseText(words(R.number(1, 6))),
-          description: capitalizeText(sentences(R.number(1, 3))),
-          audience: R.array_element(['student', 'teacher', 'pastor'])
+          title: titleCaseText(words(H.randomNumber({
+            min: 1,
+            max: 6
+          }))),
+          description: capitalizeText(sentences(H.randomNumber({
+            min: 1,
+            max: 3
+          }))),
+          audience: H.randomize(['student', 'teacher', 'pastor'])
         };
       };
 
-      return ContentFactory;
+      return ContentPageFactory;
+
+    })(MockModelFactory);
+    CreditFactory = (function(_super) {
+      __extends(CreditFactory, _super);
+
+      function CreditFactory() {
+        return CreditFactory.__super__.constructor.apply(this, arguments);
+      }
+
+      CreditFactory.prototype.generate = function() {
+        return {
+          title: words(3),
+          amount: H.randomNumber({
+            min: 1,
+            max: 3
+          }),
+          date: D.recent(365)
+        };
+      };
+
+      return CreditFactory;
 
     })(MockModelFactory);
     defaultCount = 100;
-    mockModels = {
-      schools: new SchoolFactory(defaultCount),
-      churches: new ChurchFactory(defaultCount),
-      unions: new UnionFactory(5),
-      conferences: new ConferenceFactory(12),
-      contentPages: new ContentFactory(defaultCount)
-    };
-    mockModels.courses = new CourseFactory(defaultCount, mockModels.schools);
-    mockModels.resources = new ResourceFactory(defaultCount, mockModels.schools);
+    mockModels = {};
+    _.merge(mockModels, {
+      churches: new ChurchFactory(defaultCount, mockModels),
+      conferences: new ConferenceFactory(12, mockModels),
+      contentPages: new ContentPageFactory(defaultCount, mockModels),
+      courses: new CourseFactory(defaultCount, mockModels),
+      resources: new ResourceFactory(defaultCount, mockModels),
+      schools: new SchoolFactory(defaultCount, mockModels),
+      unions: new UnionFactory(5, mockModels),
+      users: new UserFactory(50, mockModels),
+      credits: new CreditFactory(10, mockModels)
+    });
     return mockModels;
   });
 
@@ -1159,6 +1881,7 @@
       $state.go('dashboard');
       return [302, '', {}];
     });
+    $httpBackend.whenPOST('/resource/ceu_request').respond({});
     return params = function(url) {
       return $.parseParams(url);
     };
