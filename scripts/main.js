@@ -1,25 +1,26 @@
 (function() {
-  var app;
+  var app, themes;
 
-  Holder.add_theme('wf-dark', {
+  themes = {
+    wf: {
+      background: '#888',
+      foreground: '#aaa',
+      size: '11',
+      font: 'Helvetica Neue, Helvetica, sans-serif',
+      fontweight: 'lighter'
+    }
+  };
+
+  themes['wf-dark'] = _.merge({}, themes.wf, {
     background: '#555',
-    foreground: '#777',
-    size: '11',
-    font: 'Helvetica Neue, Helvetica, sans-serif',
-    fontweight: 'lighter'
-  }).add_theme('wf', {
-    background: '#888',
-    foreground: '#aaa',
-    size: '11',
-    font: 'Helvetica Neue, Helvetica, sans-serif',
-    fontweight: 'lighter'
-  }).add_theme('wf-blank', {
-    background: '#888',
-    foreground: '#888',
-    size: '11',
-    font: 'Helvetica Neue, Helvetica, sans-serif',
-    fontweight: 'lighter'
-  }).run();
+    foreground: '#777'
+  });
+
+  themes['wf-blank'] = _.merge({}, themes.wf, {
+    foreground: themes.wf.background
+  });
+
+  Holder.add_theme('wf', themes.wf).add_theme('wf-dark', themes['wf-dark']).add_theme('wf-blank', themes['wf-blank']).run();
 
   app = angular.module('ALC.Base', ['mm.foundation', 'ngDropzone', 'ui.utils', 'ngAnimate', 'ui.select', 'ngTagsInput', 'toastr']);
 
@@ -328,7 +329,6 @@
     };
     fetchNewResults = function() {
       var filters;
-      console.log($scope.filters);
       filters = angular.copy($scope.filters);
       return search.fetch($scope.query, filters).then(function(response) {
         return $scope.results = response.data;
@@ -1332,12 +1332,7 @@
       url: '/courses/:id',
       templateUrl: 'partials/course.html',
       controller: function($scope, $stateParams, mockModels) {
-        $scope.wfCourse = mockModels.courses.get(+$stateParams.id);
-        return $scope.teacherNames = function(teachers) {
-          return _.str.toSentence(_.map(teachers, function(teacher) {
-            return "" + teacher.name.first + " " + teacher.name.last;
-          }));
-        };
+        return $scope.wfCourse = mockModels.courses.get(+$stateParams.id);
       }
     }).state('course_sign_up', {
       params: {
@@ -1375,6 +1370,39 @@
       controller: function($state, $rootScope) {
         $state.go('dashboard');
         return $rootScope.wfFlash = "Successfully submitted event for CEU credit!";
+      }
+    }).state('promo_page', {
+      abstract: true,
+      templateUrl: 'partials/promo-page.html'
+    }).state('promo_page.student', {
+      url: '/students',
+      templateUrl: 'partials/promo-page.student.html',
+      controller: function($scope) {
+        return $scope.role = 'Student';
+      }
+    }).state('promo_page.teacher', {
+      url: '/teachers',
+      templateUrl: 'partials/promo-page.teacher.html',
+      controller: function($scope) {
+        return $scope.role = 'Student';
+      }
+    }).state('promo_page.pastor', {
+      url: '/pastors',
+      templateUrl: 'partials/promo-page.pastor.html',
+      controller: function($scope) {
+        return $scope.role = 'Student';
+      }
+    }).state('promo_page.leader', {
+      url: '/leaders',
+      templateUrl: 'partials/promo-page.leader.html',
+      controller: function($scope) {
+        return $scope.role = 'Student';
+      }
+    }).state('promo_page.believer', {
+      url: '/believers',
+      templateUrl: 'partials/promo-page.believer.html',
+      controller: function($scope) {
+        return $scope.role = 'Student';
       }
     });
   });
@@ -1417,7 +1445,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module('ALC.Wire').factory('mockModels', function() {
-    var A, AdventistOrganizationFactory, C, ChurchFactory, ConferenceFactory, ContentPageFactory, CourseFactory, CreditFactory, D, F, H, Ha, I, IMG, L, MockModelFactory, N, P, R, ResourceFactory, SchoolFactory, UnionFactory, UserFactory, capitalizeStr, capitalizeText, defaultCount, mockModels, sentences, titleCaseText, words;
+    var A, AdventistOrganizationFactory, C, ChurchFactory, ConferenceFactory, ContentPageFactory, CourseFactory, CreditFactory, D, F, H, Ha, I, IMG, L, MockModelFactory, N, P, R, ResourceFactory, SchoolFactory, UnionFactory, UserFactory, capitalizeStr, capitalizeText, defaultCount, mockModels, paragraph, paragraphs, sentences, titleCaseText, words;
     A = faker.address;
     C = faker.company;
     D = faker.date;
@@ -1430,11 +1458,27 @@
     N = faker.name;
     P = faker.phone;
     R = faker.random;
-    sentences = function(count) {
-      return L.sentences(count).split("\n").join('. ') + '.';
-    };
     words = function(count) {
       return L.words(count).join(' ');
+    };
+    sentences = function(count) {
+      return _.map(L.sentences(count).split("\n"), function(str) {
+        return _.str.capitalize(str);
+      }).join('. ') + '.';
+    };
+    paragraph = function() {
+      return sentences(R.number(4) + 1);
+    };
+    paragraphs = function(count) {
+      var i;
+      return ((function() {
+        var _i, _results;
+        _results = [];
+        for (i = _i = 1; 1 <= count ? _i <= count : _i >= count; i = 1 <= count ? ++_i : --_i) {
+          _results.push(paragraph());
+        }
+        return _results;
+      })()).join("\n");
     };
     titleCaseText = function(text) {
       return text.replace(/\w\S*/g, capitalizeStr);
@@ -1708,22 +1752,31 @@
           name: {
             first: N.firstName(),
             last: N.lastName()
-          }
+          },
+          bio: paragraphs(R.number(1, 2))
         };
       };
 
+      CourseFactory.prototype.generateBeginDate = function() {
+        return D.between(moment().add(3, 'days'), moment().add(30, 'days'));
+      };
+
+      CourseFactory.prototype.generateEndDate = function() {
+        return D.between(moment().add(40, 'days'), moment().add(90, 'days'));
+      };
+
       CourseFactory.prototype.generate = function() {
+        var seats;
         return {
           id: this.generateId(),
-          type: 'Course',
+          "class": 'Course',
           title: titleCaseText(words(H.randomNumber({
             min: 1,
             max: 6
           }))),
-          description: capitalizeText(sentences(H.randomNumber({
-            min: 3,
-            max: 10
-          }))),
+          description: paragraphs(R.number(1, 3)),
+          prerequisites: paragraphs(R.number(1, 4)),
+          outcome: paragraphs(R.number(1, 4)),
           audience: H.randomize(['student', 'teacher', 'pastor']),
           coreCompetency: H.randomize(['one', 'two', 'three', 'four', 'five']),
           offeredBy: H.randomize(this.models.schools.all()),
@@ -1733,7 +1786,15 @@
               max: 50
             })
           ]),
-          teachers: [this.generateTeacher()]
+          instructor: this.generateTeacher(),
+          type: H.randomize(['moderated', 'self-paced']),
+          dualCredit: H.randomize([true, false]),
+          beginDate: this.generateBeginDate(),
+          endDate: this.generateEndDate(),
+          seats: (seats = H.randomize([25, 35, 50, 75, 100])),
+          seatsTaken: seats * .8,
+          gradeLevel: H.randomize(['8', '9', '10', '11', '12', 'Higher Ed.']),
+          certsAcceptedBy: [H.randomize(this.models.schools.all()), H.randomize(this.models.schools.all()), H.randomize(this.models.schools.all())]
         };
       };
 
@@ -1751,7 +1812,7 @@
         var object;
         object = {
           id: this.generateId(),
-          type: 'Resource',
+          "class": 'Resource',
           resourceType: H.randomize(['PDF', 'Video', 'PowerPoint', 'Link']),
           title: titleCaseText(words(H.randomNumber({
             min: 1,
@@ -1791,7 +1852,7 @@
       ContentPageFactory.prototype.generate = function() {
         return {
           id: this.generateId(),
-          type: 'ContentPage',
+          "class": 'ContentPage',
           title: titleCaseText(words(H.randomNumber({
             min: 1,
             max: 6
